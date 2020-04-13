@@ -1,0 +1,4 @@
+# Project exclude paths
+/imclient/target/
+/imcommon/target/
+/imserver/target/
