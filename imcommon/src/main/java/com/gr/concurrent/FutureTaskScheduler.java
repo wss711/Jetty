@@ -23,7 +23,7 @@ public class FutureTaskScheduler extends Thread {
 
     // 线程实例
     private static FutureTaskScheduler instance = new FutureTaskScheduler();
-    private FutureTaskScheduler(){
+    private FutureTaskScheduler(){ // 构造启动Future任务线程
         this.start();
     }
 
@@ -37,7 +37,6 @@ public class FutureTaskScheduler extends Thread {
         while(true){
 
             handleTask();
-
             threadSleep(sleepTime);
 
         }

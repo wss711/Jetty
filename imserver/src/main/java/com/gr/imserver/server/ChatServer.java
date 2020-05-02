@@ -33,8 +33,6 @@ import java.net.InetSocketAddress;
 @Service("ChatServer")
 public class ChatServer {
 
-
-//    @Value("${server.port}")
     private int port = 10711;       // 服务器端口
 
     private EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -93,6 +91,4 @@ public class ChatServer {
             bossGroup.shutdownGracefully();
         }
     }
-
-
 }

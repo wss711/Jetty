@@ -22,11 +22,10 @@ public class ServerApplication {
     public static void main(String[] args){
 
         // 启动并初始化 Spring 环境及其各 Spring 组件
-        ApplicationContext context =
-                SpringApplication.run(ServerApplication.class,args);
+        ApplicationContext context = SpringApplication.run(ServerApplication.class,args);
 
+        // 会话服务
         ChatServer nettyServer = context.getBean(ChatServer.class);
-
         nettyServer.run();
     }
 

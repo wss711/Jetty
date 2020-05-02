@@ -35,6 +35,8 @@ public class LoginRequestHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx,Object msg) throws Exception{
+
+        // 初步判定消息类型
         if(null == msg || !(msg instanceof ProtoMsg.Message)){
             super.channelRead(ctx,msg);
             return;
@@ -49,9 +51,10 @@ public class LoginRequestHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        //
         ServerSession session = new ServerSession(ctx.channel());
 
-        //异步任务，处理登录的逻辑
+        // 异步任务，处理登录的逻辑
         CallbackTaskScheduler.add(new CallbackTask<Boolean>() {
             @Override
             public Boolean execute() throws Exception {
@@ -59,7 +62,6 @@ public class LoginRequestHandler extends ChannelInboundHandlerAdapter {
                 return r;
             }
 
-            //
             // 异步任务返回
             @Override
             public void onBack(Boolean r) {

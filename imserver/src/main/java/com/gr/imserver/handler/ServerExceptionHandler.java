@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service("ServerExceptionHandler")
 public class ServerExceptionHandler extends ChannelInboundHandlerAdapter {
 
+    /**  */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx,Throwable t)throws Exception{
         if(t instanceof InvalidFrameException){

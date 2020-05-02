@@ -71,8 +71,7 @@ public final class SessionMap {
 
         ServerSession ss = map.get(sessionId);
         map.remove(sessionId);
-        log.info("用户下线:id= " + ss.getUser().getUid()
-                        + "   在线总数: " + map.size());
+        log.info("用户下线:id= " + ss.getUser().getUid() + "   在线总数: " + map.size());
     }
 
     /** 判断用户是否已登录 */

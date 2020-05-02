@@ -11,7 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
-/**
+/** TODO 心跳--利用netty自带的IdleStateHandler实现空闲状态处理
+ *
  * @author WSS
  * @descripton
  * @date 2020-04-12 19:36
@@ -19,9 +20,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HeartBeatServerHandler extends IdleStateHandler {
 
-    private static final int READ_IDLE_GAP = 150;
+
+    private static final int READ_IDLE_GAP = 150; // 心跳间隔
 
     public HeartBeatServerHandler(){
+        //
         super(READ_IDLE_GAP,0,0, TimeUnit.SECONDS);
     }
 
@@ -34,11 +37,11 @@ public class HeartBeatServerHandler extends IdleStateHandler {
             return;
         }
 
-        ProtoMsg.Message pmm = (ProtoMsg.Message) msg;
-
         // 判断消息类型
+        ProtoMsg.Message pmm = (ProtoMsg.Message) msg;
         ProtoMsg.HeadType headType = pmm.getType();
         if(headType.equals(ProtoMsg.HeadType.HEART_BEAT)){
+
             //异步处理,将心跳包，直接回复给客户端
             FutureTaskScheduler.add(() -> {
                 if(ctx.channel().isActive()){

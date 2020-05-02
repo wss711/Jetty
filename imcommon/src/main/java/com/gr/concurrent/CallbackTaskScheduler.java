@@ -43,6 +43,7 @@ public class CallbackTaskScheduler extends Thread {
             handleTask();
 
             threadSleep(sleepTime);
+
         }
     }
 

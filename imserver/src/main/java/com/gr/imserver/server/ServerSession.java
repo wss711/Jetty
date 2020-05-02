@@ -36,14 +36,15 @@ public class ServerSession {
     private boolean isLogin = false;    // 登录状态
 
     /** session中存储的session 变量属性值 */
-    private Map<String,Object> map = new HashMap<>();
+    private Map<String,Object> map = new HashMap<String, Object>();
 
+    /** 构造方法，核心的channel和sessionId进行构建 */
     public ServerSession(Channel channel) {
         this.channel = channel;
         this.sessionId = buildNewSessionId();
     }
 
-    /** 反向重定向 */
+    /** 重定向 channel --> session */
     public static ServerSession getSession(ChannelHandlerContext ctx){
         Channel channel = ctx.channel();
         return channel.attr(ServerSession.SESSION_KEY).get();
@@ -61,7 +62,7 @@ public class ServerSession {
     }
 
     public boolean isValid(){
-        return getUser() != null?true:false;
+        return getUser() != null;
     }
 
     /** 关闭连接 */

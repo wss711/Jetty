@@ -1,5 +1,5 @@
 syntax = "proto3";
-package com.gr.im.common.bean.msg;
+package com.gr.fresh.common.bean.msg;
 
 /*消息的枚举类型*/
 enum HeadType{

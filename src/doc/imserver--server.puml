@@ -1,0 +1,156 @@
+@startuml
+
+class ProtoMsg{
+    + Message : class
+    + HeadType : class
+    + LoginRequest : class
+    + LoginResponse : class
+    + Message : class
+enum HeadType{}
+class LoginRequest{}
+class LoginResponse{}
+class Builder{}
+}
+'Message --* ProtoMsg
+'HeadType --* ProtoMsg
+'LoginRequest --* ProtoMsg
+'LoginResponse --* ProtoMsg
+'Builder --* Message
+'Builder --* LoginResponse
+
+class ServerApplication{
+'    public static void main(String[] args)
+}
+class ChatServer{
+'    - port : int
+'    - bossGroup : EventLoopGroup
+'    - workGroup : EventLoopGroup
+'    - loginRequestHandler : loginRequestHandler
+'    - chatRedirectHandler : ChatRedirectHandler
+'    - serverExceptionHandler : ServerExceptionHandler
+'    + run():()
+}
+class ServerSession{
+'     + KEY_USER_ID : public static final AttributeKey<String>
+'     + SESSION_KEY : public static final AttributeKey<ServerSession>
+'     - channel : Channel
+'     - user : User
+'     - sessionId : final String
+'     - isLogin : boolean
+'     - map : Map<String, Object>
+'
+'     + getter()/setter()
+'     + ServerSession(Channel channel)
+'     + {static} getSession(ChannelHandlerContext ctx) :  ServerSession
+'     + {static} closeSession(ChannelHandlerContext ctx) : void
+'     + bind() : ServerSession
+'     + unbind() : ServerSession
+'     + isValid() : boolean
+'     + writeAndFlush(Object pmm) : synchronized void
+'     - {static} buildNewSessionId():String
+
+}
+class SessionMap{
+'    - {static} INSTANCE : SessionMap
+'    - map:ConcurrentHashMap<String,ServerSession>
+'    - SessionMap()
+'    + {static}getInstance() : SessionMap
+'    + addSession(String sessionId,ServerSession ss) : void
+'    + getSession(String sessionId) : ServerSession
+'    + getSessionByUserId(String userId) : List<ServerSession>
+'    + removeSession(String sessionId) : void
+'    + hasLogin(User user) : boolean
+
+}
+
+class LoginResponceBuilder{
+
+}
+
+class ChatMsgBuilder{
+}
+
+interface ServerProcesser{
+
+}
+
+class LoginProcesser{
+}
+
+class ChatRedirectProcesser{
+}
+
+abstract class AbstractServerProcesser{
+}
+
+class LoginRequestHandler{
+}
+class HeartBeatServerHandler{
+}
+class ChatRedirectHandler{
+}
+class ServerExceptionHandler {
+
+}
+
+
+
+
+class InvalidFrameException {
+
+}
+class ProtobufDecoder{
+'    decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+}
+class ProtobufEncoder{
+}
+class CallbackTaskScheduler{}
+interface CallbackTask<R> {}
+
+class LoginResponceBuilder{}
+class LoginRequest{}
+
+class User {}
+class ProtoInstant{}
+enum ResultCodeEnum{}
+ProtoInstant *-- ResultCodeEnum
+
+ServerApplication ..> ChatServer
+
+ChatServer ..> ProtobufDecoder
+
+ChatServer ..> ProtobufEncoder
+ChatServer --> LoginRequestHandler
+ChatServer --> ChatRedirectHandler
+ChatServer --> ServerExceptionHandler
+
+ProtobufDecoder ..> ProtoMsg.Message
+ProtobufEncoder ..> ProtoMsg.Message
+
+SessionMap ..> ServerSession
+
+LoginRequestHandler --> LoginProcesser
+LoginRequestHandler ..> Message
+LoginRequestHandler ..> ServerSession
+LoginRequestHandler ..> CallbackTaskScheduler
+LoginRequestHandler ..> CallbackTask
+
+
+LoginProcesser --> LoginResponceBuilder
+LoginProcesser --> HeadType
+LoginProcesser --> ServerSession
+LoginProcesser --> Message
+LoginProcesser --> User
+
+LoginResponceBuilder ..> Message
+LoginResponceBuilder ..> HeadType
+LoginResponceBuilder ..> ResultCodeEnum
+LoginResponceBuilder ..> Builder
+
+
+
+
+
+
+
+@enduml

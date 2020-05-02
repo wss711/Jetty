@@ -1,0 +1,97 @@
+@startuml
+class ChatServer {
+    - port : int
+    - bossGroup : EventLoopGroup
+    - workerGroup : EventLoopGroup
+    - b : ServerBootstrap
+    - loginRequestHandler : LoginRequestHandler
+    - chatRedirectHandler : ChatRedirectHandler
+    - serverExceptionHandler : ServerExceptionHandler
+    + run() : void
+}
+
+class ServerSession {
+    + {static} USER_ID_KEY : AttributeKey<String>
+    + {static} SESSION_KEY : AttributeKey<ServerSession>
+    - channel : channel
+    - user : User
+    - sessionId : String
+    - isLogin : boolean
+    - map : Map<String,Object>
+    + ServerSession()
+    + {static}getSession(ChannelHandlerContext ctx) : ServerSession
+    + {static}closeSession(ChannelHandlerContext ctx) : void
+    + isValid() : boolean
+    + close() : synchronized void
+    + bind() : ServerSession
+    + unbind() : ServerSession
+    + buildNewSessionId() : Spring
+    + writeAndFlush(Object pmm) : synchronized void
+}
+
+class SessionMap {
+    - {static}INSTANCE : SessionMap
+    + {static}getInstance() : SessionMap
+    - map ：ConcurrentHashMap<String,ServerSession>
+    + addSession(String sessionId,ServerSession ss)：void
+    + getSession(String sessionId) ：ServerSession
+    + getSessionByUserId(String userId) ：List<ServerSession>
+    + removeSession(String sessionId) : void
+    + hasLogin(User user) : boolean
+
+}
+
+class ChatRedirectHandler{
+    ~ chatRedirectProcesser : ChatRedirectProcesser
+    + channelRead(ChannelHandlerContext ctx,Object msg) : void
+}
+
+class HeartBeatServerHandler{
+    - {static}READ_IDLE_GAP : int
+    # HeartBeatServerHandler()
+    + channelRead(ChannelHandlerContext ctx,Object msg) : void
+    # channelIdle(ChannelHandlerContext ctx, IdleStateEvent evt) : void
+}
+
+class LoginRequestHandler{
+    ~ loginProcesser : LoginProcesser
+    + channelRead(ChannelHandlerContext ctx,Object msg) : void
+}
+
+class ServerExceptionHandler{
+    + exceptionCaught(ChannelHandlerContext ctx,Throwable t) : void
+    + channelReadComplete(ChannelHandlerContext ctx) : void
+    + channelInactive(ChannelHandlerContext ctx) : void
+}
+
+abstract class AbstractServerProcesser{
+    # getKey(Channel ch) : String
+    # setKey(Channel ch,String key) ：void
+    # void checkAuth(Channel ch) : void
+}
+
+class ChatRedirectProcesser{
+    + type() : ProtoMsg.HeadType
+    + action(ServerSession fromSession, ProtoMsg.Message protoMsg) : boolean
+}
+
+class LoginProcesser{
+    ~ loginResponceBuilder : loginResponceBuilder
+    + type() : ProtoMsg.HeadType
+    + action(ServerSession session, ProtoMsg.Message protoMsg) : boolean
+    - checkUser(User user) : boolean
+}
+
+interface ServerProcesser {
+    ~ type() : ProtoMsg.HeadType
+    ~ action(ServerSession session,ProtoMsg.Message protoMsg) : boolean
+}
+class ChatMsgBuilder{
+    +{static} buildChatResponse(long seqId, ProtoInstant.ResultCodeEnum rce) : ProtoMsg.Message
+    +{static} buildLoginResponse(long seqId,ProtoInstant.ResultCodeEnum rce) : ProtoMsg.Message
+}
+
+class LoginResponceBuilder {
+    + loginResponce(long seqId,String sessionId,ProtoInstant.ResultCodeEnum rce) : ProtoMsg.Message
+}
+@enduml

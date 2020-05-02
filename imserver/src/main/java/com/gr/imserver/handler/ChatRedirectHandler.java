@@ -1,5 +1,6 @@
 package com.gr.imserver.handler;
 
+import com.gr.concurrent.ExecuteTask;
 import com.gr.concurrent.FutureTaskScheduler;
 import com.gr.im.common.bean.msg.ProtoMsg;
 import com.gr.imserver.processer.ChatRedirectProcesser;
@@ -41,7 +42,7 @@ public class ChatRedirectHandler extends ChannelInboundHandlerAdapter {
         }
 
         // 判断消息类型
-        ProtoMsg.Message pmm = (ProtoMsg.Message)msg;
+        final ProtoMsg.Message pmm = (ProtoMsg.Message)msg;
         ProtoMsg.HeadType headType = ((ProtoMsg.Message)msg).getType();
         if(!headType.equals(chatRedirectProcesser.type())){
             super.channelRead(ctx, msg);
@@ -49,15 +50,17 @@ public class ChatRedirectHandler extends ChannelInboundHandlerAdapter {
         }
 
         // 判断是否登录
-        ServerSession session = ServerSession.getSession(ctx);
+        final ServerSession session = ServerSession.getSession(ctx);
         if(null == session || !session.isLogin()){
             log.error("用户尚未登录，不能发送消息");
             return;
         }
 
         // 异步处理IM消息转发的逻辑
-        FutureTaskScheduler.add(()->{
-            chatRedirectProcesser.action(session,pmm);
+        FutureTaskScheduler.add(new ExecuteTask() {
+            public void excute() {
+                chatRedirectProcesser.action(session, pmm);
+            }
         });
 
     }

@@ -30,18 +30,17 @@ public class LoginProcesser extends AbstractServerProcesser{
         return ProtoMsg.HeadType.LOGIN_REQUEST;
     }
 
-    /**
-     * 执行动作
+    /** TODO 核心动作，完成登录请求处理
      *
      * @param session
-     * @param protoMsg
+     * @param pmm
      */
     @Override
-    public boolean action(ServerSession session, ProtoMsg.Message protoMsg) {
+    public boolean action(ServerSession session, ProtoMsg.Message pmm) {
 
         // 取出token验证
-        ProtoMsg.LoginRequest info = protoMsg.getLoginRequest();
-        long seqNo = protoMsg.getSequence();
+        ProtoMsg.LoginRequest info = pmm.getLoginRequest();
+        long seqNo = pmm.getSequence();
 
         User user = User.fromMsg(info);
 
@@ -50,9 +49,8 @@ public class LoginProcesser extends AbstractServerProcesser{
         if(!isValidUser){
             // 设置授权
             ProtoInstant.ResultCodeEnum rce = ProtoInstant.ResultCodeEnum.NO_TOKEN;
-            // 构造登录失败的报文
-            ProtoMsg.Message response =
-                    loginResponceBuilder.loginResponce(seqNo,"-1",rce);
+            // 构造再次登录失败的报文
+            ProtoMsg.Message response = loginResponceBuilder.loginResponce(seqNo,"-1",rce);
             // 发送登录失败的报文
             session.writeAndFlush(response);
 
@@ -65,8 +63,7 @@ public class LoginProcesser extends AbstractServerProcesser{
         session.bind();
 
         // 登录成功
-        ProtoInstant.ResultCodeEnum resultCodeEnum =
-                ProtoInstant.ResultCodeEnum.SUCCESS;
+        ProtoInstant.ResultCodeEnum resultCodeEnum = ProtoInstant.ResultCodeEnum.SUCCESS;
         // 构造登录成功的报文
         ProtoMsg.Message response = loginResponceBuilder.loginResponce(
                 seqNo, session.getSessionId(), resultCodeEnum);
@@ -87,6 +84,8 @@ public class LoginProcesser extends AbstractServerProcesser{
         if(SessionMap.getInstance().hasLogin(user)){
             return false;
         }
+
+        // 以后参与数据库记录验证
         return true;
     }
 }
